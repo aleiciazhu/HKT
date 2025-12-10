@@ -232,6 +232,12 @@ class HKTMultiLayerCrossAttn(nn.Module):
         
         text_outputs = self.text_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
         text_output = text_outputs[0]  # last_hidden_state
+
+        # Debug: Check text_output shape and if it has variation
+        if not hasattr(self, '_debug_printed'):
+            print(f"DEBUG first batch: text_output shape: {text_output.shape}, type: {type(text_outputs)}")
+            self._debug_printed = True
+
         (_, _, visual_output) = self.visual_model(visual)
         (_, _, acoustic_output) = self.acoustic_model(acoustic)
         (_, _, hcf_output) = self.hcf_model(hcf)
@@ -258,9 +264,15 @@ class HKTMultiLayerCrossAttn(nn.Module):
         #print(weighted_vad_emb.shape)
         fusion = (text_embedding, visual_embedding, acoustic_embedding,L_AV_embedding)
         fused_hidden = torch.cat(fusion, dim=1)
-        
+
+        # Debug: Check if fused_hidden has variation across batch
+        if torch.isnan(fused_hidden).any() or (fused_hidden.std(dim=0).mean() < 1e-6):
+            print(f"DEBUG: fused_hidden issue - shape: {fused_hidden.shape}, mean std across features: {fused_hidden.std(dim=0).mean()}")
+            if fused_hidden.shape[0] > 1:
+                print(f"  Batch variation: {(fused_hidden[0] - fused_hidden[1]).abs().sum()}")
+
         out = self.fc(fused_hidden)
-        
+
         return (out, fused_hidden)
 
 
@@ -301,6 +313,12 @@ class HKT(nn.Module):
         
         text_outputs = self.text_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
         text_output = text_outputs[0]  # last_hidden_state
+
+        # Debug: Check text_output shape and if it has variation
+        if not hasattr(self, '_debug_printed'):
+            print(f"DEBUG first batch: text_output shape: {text_output.shape}, type: {type(text_outputs)}")
+            self._debug_printed = True
+
         (_, _, visual_output) = self.visual_model(visual)
         (_, _, acoustic_output) = self.acoustic_model(acoustic)
         (_, _, hcf_output) = self.hcf_model(hcf)
@@ -326,9 +344,15 @@ class HKT(nn.Module):
         
         fusion = (text_embedding, visual_embedding, acoustic_embedding,L_AV_embedding)
         fused_hidden = torch.cat(fusion, dim=1)
-        
+
+        # Debug: Check if fused_hidden has variation across batch
+        if torch.isnan(fused_hidden).any() or (fused_hidden.std(dim=0).mean() < 1e-6):
+            print(f"DEBUG: fused_hidden issue - shape: {fused_hidden.shape}, mean std across features: {fused_hidden.std(dim=0).mean()}")
+            if fused_hidden.shape[0] > 1:
+                print(f"  Batch variation: {(fused_hidden[0] - fused_hidden[1]).abs().sum()}")
+
         out = self.fc(fused_hidden)
-        
+
         return (out, fused_hidden)
 
 
