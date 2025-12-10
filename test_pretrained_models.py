@@ -365,13 +365,19 @@ def test_epoch(model, data_loader, loss_fct):
                 hcf,
                 label_ids
             ) = batch
-                    
+
+            # Debug: Check shapes BEFORE squeeze
+            if nb_eval_steps == 0:
+                print(f"DEBUG BEFORE squeeze:")
+                print(f"  visual shape: {visual.shape}")
+                print(f"  acoustic shape: {acoustic.shape}")
+
             visual = torch.squeeze(visual, 1)
             acoustic = torch.squeeze(acoustic, 1)
 
-            # Debug: Check if input data has batch variation
+            # Debug: Check if input data has batch variation AFTER squeeze
             if nb_eval_steps == 0:
-                print(f"DEBUG Input data:")
+                print(f"DEBUG AFTER squeeze:")
                 print(f"  visual shape: {visual.shape}, batch std: {visual.std(dim=0).mean().item():.6f}")
                 print(f"  acoustic shape: {acoustic.shape}, batch std: {acoustic.std(dim=0).mean().item():.6f}")
                 print(f"  hcf shape: {hcf.shape}, batch std: {hcf.std(dim=0).mean().item():.6f}")
