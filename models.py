@@ -230,7 +230,8 @@ class HKTMultiLayerCrossAttn(nn.Module):
 
     def forward(self, input_ids, visual, acoustic,hcf, attention_mask=None, token_type_ids=None):
         
-        (text_output, _) = self.text_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        text_outputs = self.text_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        text_output = text_outputs[0]  # last_hidden_state
         (_, _, visual_output) = self.visual_model(visual)
         (_, _, acoustic_output) = self.acoustic_model(acoustic)
         (_, _, hcf_output) = self.hcf_model(hcf)
@@ -298,7 +299,8 @@ class HKT(nn.Module):
     
     def forward(self, input_ids, visual, acoustic,hcf, attention_mask=None, token_type_ids=None):
         
-        (text_output, _) = self.text_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        text_outputs = self.text_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        text_output = text_outputs[0]  # last_hidden_state
         (_, _, visual_output) = self.visual_model(visual)
         (_, _, acoustic_output) = self.acoustic_model(acoustic)
         (_, _, hcf_output) = self.hcf_model(hcf)
