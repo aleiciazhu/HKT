@@ -4,7 +4,8 @@ import torch
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ["WANDB_PROGRAM"] = "multimodal_driver.py"
 
-DEVICE = torch.device("cuda:0")
+# Use CPU due to CUDA compatibility issues with H200
+DEVICE = torch.device("cpu")
 
 visual_features_list=list(range(55,91))
 acoustic_features_list=list(range(0,60))
