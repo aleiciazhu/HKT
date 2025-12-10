@@ -357,10 +357,14 @@ def test_epoch(model, data_loader, loss_fct):
 
             logits = outputs[0]
 
-            # Debug: Check raw logits
+            # Debug: Check shapes and values
+            print(f"Batch {nb_eval_steps}:")
+            print(f"  Logits shape: {logits.shape}")
+            print(f"  Label_ids shape: {label_ids.shape}")
+            print(f"  Logits unique values: {torch.unique(logits).shape[0]}")
             if torch.isnan(logits).any() or torch.isinf(logits).any():
-                print(f"WARNING: NaN/Inf in raw logits at batch {nb_eval_steps}")
-                print(f"Logits stats - min: {logits.min()}, max: {logits.max()}, mean: {logits.mean()}")
+                print(f"  WARNING: NaN/Inf detected!")
+                print(f"  Stats - min: {logits.min()}, max: {logits.max()}, mean: {logits.mean()}")
 
             tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
 
@@ -369,10 +373,9 @@ def test_epoch(model, data_loader, loss_fct):
             
             logits = torch.sigmoid(logits)
 
-            # Debug: Check for NaN values
+            # Debug: Check for NaN values after sigmoid
             if torch.isnan(logits).any():
-                print(f"WARNING: NaN detected in logits at batch {nb_eval_steps}")
-                print(f"Logits: {logits}")
+                print(f"  WARNING: NaN detected after sigmoid!")
 
             if len(preds) == 0:
                 preds=logits.detach().cpu().numpy()
