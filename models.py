@@ -25,7 +25,6 @@ from transformers import (
     AlbertConfig,
     load_tf_weights_in_albert,
 )
-from transformers.modeling_albert import AlbertEmbeddings, AlbertLayerGroup
 
 
 
