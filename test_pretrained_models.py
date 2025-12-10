@@ -358,12 +358,13 @@ def test_epoch(model, data_loader, loss_fct):
             logits = outputs[0]
 
             # Debug: Check shapes and values
-            print(f"Batch {nb_eval_steps}:")
-            print(f"  Logits shape: {logits.shape}")
-            print(f"  Label_ids shape: {label_ids.shape}")
-            print(f"  Logits unique values: {torch.unique(logits).shape[0]}")
+            if nb_eval_steps == 0:  # Only print once to avoid spam
+                print(f"Batch {nb_eval_steps}:")
+                print(f"  Logits shape: {logits.shape}")
+                print(f"  Label_ids shape: {label_ids.shape}")
+                print(f"  Logits min/max/mean: {logits.min().item():.4f} / {logits.max().item():.4f} / {logits.mean().item():.4f}")
             if torch.isnan(logits).any() or torch.isinf(logits).any():
-                print(f"  WARNING: NaN/Inf detected!")
+                print(f"Batch {nb_eval_steps}: WARNING: NaN/Inf detected!")
                 print(f"  Stats - min: {logits.min()}, max: {logits.max()}, mean: {logits.mean()}")
 
             tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
