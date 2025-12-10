@@ -238,6 +238,17 @@ def get_appropriate_dataset(data, tokenizer, parition):
     
 
     features = convert_humor_to_features(data, tokenizer)
+
+    # Debug: Check if features are actually different
+    print(f"DEBUG: Created {len(features)} features from dataset")
+    if len(features) > 1:
+        # Check if first two features are different
+        feat0_visual = features[0].visual
+        feat1_visual = features[1].visual
+        print(f"  Feature 0 visual sum: {feat0_visual.sum()}")
+        print(f"  Feature 1 visual sum: {feat1_visual.sum()}")
+        print(f"  Are they different? {not np.array_equal(feat0_visual, feat1_visual)}")
+
     all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
     all_input_mask = torch.tensor([f.input_mask for f in features], dtype=torch.long)
     all_segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
@@ -245,6 +256,11 @@ def get_appropriate_dataset(data, tokenizer, parition):
     all_acoustic = torch.tensor([f.acoustic for f in features], dtype=torch.float)
     hcf = torch.tensor([f.hcf for f in features], dtype=torch.float)
     all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.float)
+
+    # Debug: Check batch variation in created tensors
+    print(f"DEBUG: Tensor batch variation:")
+    print(f"  all_visual shape: {all_visual.shape}, batch std: {all_visual.std(dim=0).mean().item():.6f}")
+    print(f"  all_acoustic shape: {all_acoustic.shape}, batch std: {all_acoustic.std(dim=0).mean().item():.6f}")
     
 
     dataset = TensorDataset(
