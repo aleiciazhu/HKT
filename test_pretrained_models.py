@@ -369,7 +369,14 @@ def test_epoch(model, data_loader, loss_fct):
             visual = torch.squeeze(visual, 1)
             acoustic = torch.squeeze(acoustic, 1)
 
-            
+            # Debug: Check if input data has batch variation
+            if nb_eval_steps == 0:
+                print(f"DEBUG Input data:")
+                print(f"  visual shape: {visual.shape}, batch std: {visual.std(dim=0).mean().item():.6f}")
+                print(f"  acoustic shape: {acoustic.shape}, batch std: {acoustic.std(dim=0).mean().item():.6f}")
+                print(f"  hcf shape: {hcf.shape}, batch std: {hcf.std(dim=0).mean().item():.6f}")
+                print(f"  input_ids shape: {input_ids.shape}")
+
             if args.model == "HKT":
                 outputs = model(input_ids, visual, acoustic,hcf, token_type_ids=segment_ids, attention_mask=input_mask,)
 
