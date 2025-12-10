@@ -354,18 +354,26 @@ def test_epoch(model, data_loader, loss_fct):
             
             if args.model == "HKT":
                 outputs = model(input_ids, visual, acoustic,hcf, token_type_ids=segment_ids, attention_mask=input_mask,)
-            
+
             logits = outputs[0]
-            
-            
+
+            # Debug: Check raw logits
+            if torch.isnan(logits).any() or torch.isinf(logits).any():
+                print(f"WARNING: NaN/Inf in raw logits at batch {nb_eval_steps}")
+                print(f"Logits stats - min: {logits.min()}, max: {logits.max()}, mean: {logits.mean()}")
+
             tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
 
             eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
             
             logits = torch.sigmoid(logits)
-            
-            
+
+            # Debug: Check for NaN values
+            if torch.isnan(logits).any():
+                print(f"WARNING: NaN detected in logits at batch {nb_eval_steps}")
+                print(f"Logits: {logits}")
+
             if len(preds) == 0:
                 preds=logits.detach().cpu().numpy()
                 all_labels=label_ids.detach().cpu().numpy()
