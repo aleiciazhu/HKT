@@ -307,19 +307,37 @@ def get_model():
             hcf_model = Transformer(HCF_DIM, num_layers=3, nhead=2, dim_feedforward = 128)
             text_model = AlbertModel.from_pretrained('albert-base-v2')
             model = HKT(text_model, visual_model, acoustic_model,hcf_model, args)
-            model.load_state_dict(torch.load("./model_weights/best/humor/humorHKT.pt"))
+
+            # Debug: Check state dict loading
+            state_dict = torch.load("./model_weights/best/humor/humorHKT.pt")
+            print(f"Loaded state dict has {len(state_dict)} keys")
+            print(f"Model expects {len(model.state_dict())} keys")
+            result = model.load_state_dict(state_dict, strict=False)
+            if result.missing_keys:
+                print(f"WARNING: Missing keys in loaded model: {result.missing_keys[:5]}...")  # Show first 5
+            if result.unexpected_keys:
+                print(f"WARNING: Unexpected keys in state dict: {result.unexpected_keys[:5]}...")  # Show first 5
         elif args.dataset=="sarcasm":
             visual_model = Transformer(VISUAL_DIM, num_layers=8, nhead=4, dim_feedforward=1024)
             acoustic_model = Transformer(ACOUSTIC_DIM, num_layers=1, nhead=3, dim_feedforward=512)
-            hcf_model = Transformer(HCF_DIM, num_layers=8, nhead=4, dim_feedforward=128)    
+            hcf_model = Transformer(HCF_DIM, num_layers=8, nhead=4, dim_feedforward=128)
             text_model = AlbertModel.from_pretrained("albert-base-v2")
             model = HKT(text_model, visual_model, acoustic_model, hcf_model, args)
-            model.load_state_dict(torch.load("./model_weights/best/sarcasm/sarcasmHKT.pt"))
-            
-    
-    
+
+            # Debug: Check state dict loading
+            state_dict = torch.load("./model_weights/best/sarcasm/sarcasmHKT.pt")
+            print(f"Loaded state dict has {len(state_dict)} keys")
+            print(f"Model expects {len(model.state_dict())} keys")
+            result = model.load_state_dict(state_dict, strict=False)
+            if result.missing_keys:
+                print(f"WARNING: Missing keys in loaded model: {result.missing_keys[:5]}...")  # Show first 5
+            if result.unexpected_keys:
+                print(f"WARNING: Unexpected keys in state dict: {result.unexpected_keys[:5]}...")  # Show first 5
+
+
     model.to(DEVICE)
-    
+    model.eval()  # Set to evaluation mode
+
     return model
 
 
