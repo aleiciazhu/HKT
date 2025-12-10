@@ -241,8 +241,16 @@ class HKTMultiLayerCrossAttn(nn.Module):
         (_, _, visual_output) = self.visual_model(visual)
         (_, _, acoustic_output) = self.acoustic_model(acoustic)
         (_, _, hcf_output) = self.hcf_model(hcf)
-        
-        
+
+        # Debug: Check if Transformer outputs have batch variation
+        if not hasattr(self, '_debug_transformer'):
+            print(f"DEBUG Transformer outputs:")
+            print(f"  visual_output shape: {visual_output.shape}, batch var: {visual_output.std(dim=0).mean().item():.6f}")
+            print(f"  acoustic_output shape: {acoustic_output.shape}, batch var: {acoustic_output.std(dim=0).mean().item():.6f}")
+            print(f"  hcf_output shape: {hcf_output.shape}, batch var: {hcf_output.std(dim=0).mean().item():.6f}")
+            self._debug_transformer = True
+
+
         text_hcf=torch.cat((text_output,hcf_output),dim=2)
         
         # attention mask conversion
@@ -259,6 +267,15 @@ class HKTMultiLayerCrossAttn(nn.Module):
         visual_embedding = F.max_pool1d(visual_output.permute(0,2,1).contiguous(), visual_output.shape[1]).squeeze(-1)
         acoustic_embedding = F.max_pool1d(acoustic_output.permute(0,2,1).contiguous(),acoustic_output.shape[1]).squeeze(-1)
         L_AV_embedding = F.max_pool1d(noverbal_text.permute(0,2,1).contiguous(),noverbal_text.shape[1]).squeeze(-1)
+
+        # Debug: Check embeddings
+        if not hasattr(self, '_debug_embeddings'):
+            print(f"DEBUG Embeddings:")
+            print(f"  text_embedding shape: {text_embedding.shape}, batch std: {text_embedding.std(dim=0).mean().item():.6f}")
+            print(f"  visual_embedding shape: {visual_embedding.shape}, batch std: {visual_embedding.std(dim=0).mean().item():.6f}")
+            print(f"  acoustic_embedding shape: {acoustic_embedding.shape}, batch std: {acoustic_embedding.std(dim=0).mean().item():.6f}")
+            print(f"  L_AV_embedding shape: {L_AV_embedding.shape}, batch std: {L_AV_embedding.std(dim=0).mean().item():.6f}")
+            self._debug_embeddings = True
         
         
         #print(weighted_vad_emb.shape)
@@ -322,8 +339,16 @@ class HKT(nn.Module):
         (_, _, visual_output) = self.visual_model(visual)
         (_, _, acoustic_output) = self.acoustic_model(acoustic)
         (_, _, hcf_output) = self.hcf_model(hcf)
-        
-        
+
+        # Debug: Check if Transformer outputs have batch variation
+        if not hasattr(self, '_debug_transformer'):
+            print(f"DEBUG Transformer outputs:")
+            print(f"  visual_output shape: {visual_output.shape}, batch var: {visual_output.std(dim=0).mean().item():.6f}")
+            print(f"  acoustic_output shape: {acoustic_output.shape}, batch var: {acoustic_output.std(dim=0).mean().item():.6f}")
+            print(f"  hcf_output shape: {hcf_output.shape}, batch var: {hcf_output.std(dim=0).mean().item():.6f}")
+            self._debug_transformer = True
+
+
         text_hcf=torch.cat((text_output,hcf_output),dim=2)
         
         # attention mask conversion
@@ -340,6 +365,15 @@ class HKT(nn.Module):
         visual_embedding = F.max_pool1d(visual_output.permute(0,2,1).contiguous(), visual_output.shape[1]).squeeze(-1)
         acoustic_embedding = F.max_pool1d(acoustic_output.permute(0,2,1).contiguous(),acoustic_output.shape[1]).squeeze(-1)
         L_AV_embedding = F.max_pool1d(noverbal_text.permute(0,2,1).contiguous(),noverbal_text.shape[1]).squeeze(-1)
+
+        # Debug: Check embeddings
+        if not hasattr(self, '_debug_embeddings'):
+            print(f"DEBUG Embeddings:")
+            print(f"  text_embedding shape: {text_embedding.shape}, batch std: {text_embedding.std(dim=0).mean().item():.6f}")
+            print(f"  visual_embedding shape: {visual_embedding.shape}, batch std: {visual_embedding.std(dim=0).mean().item():.6f}")
+            print(f"  acoustic_embedding shape: {acoustic_embedding.shape}, batch std: {acoustic_embedding.std(dim=0).mean().item():.6f}")
+            print(f"  L_AV_embedding shape: {L_AV_embedding.shape}, batch std: {L_AV_embedding.std(dim=0).mean().item():.6f}")
+            self._debug_embeddings = True
         
         
         fusion = (text_embedding, visual_embedding, acoustic_embedding,L_AV_embedding)
