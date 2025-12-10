@@ -308,7 +308,18 @@ def set_up_data_loader():
     test_dataloader = DataLoader(
         test_dataset, batch_size=args.batch_size, shuffle=True, num_workers=1
     )
-    
+
+    # Debug: Check if DataLoader returns diverse batches
+    print(f"\nDEBUG: Testing DataLoader batching...")
+    test_iter = iter(test_dataloader)
+    first_batch = next(test_iter)
+    input_ids_batch, visual_batch, acoustic_batch, _, _, hcf_batch, _ = first_batch
+    print(f"  First batch - visual shape: {visual_batch.shape}")
+    print(f"  Sample 0 visual sum: {visual_batch[0].sum().item():.4f}")
+    print(f"  Sample 1 visual sum: {visual_batch[1].sum().item():.4f}")
+    print(f"  Are they identical? {torch.equal(visual_batch[0], visual_batch[1])}")
+    print(f"  Batch std: {visual_batch.std(dim=0).mean().item():.6f}")
+
     return (train_dataloader, dev_dataloader, test_dataloader)
 
 
